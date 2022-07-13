@@ -47,8 +47,8 @@ namespace Bets.API.App
         public async Task<BetStatusEnum> ProcessBetStatusAsync(long betId, bool allowed, CancellationToken ct)
         {
             var status = allowed ? BetStatusEnum.Confirmed : BetStatusEnum.Rejected;
-            var b = await _betsRepository.UpdateBetConfirmationAsync(betId, status, DateTime.UtcNow, ct);
-            return b.Status;
+            await _betsRepository.UpdateBetConfirmationAsync(betId, status, DateTime.UtcNow, ct);
+            return status;
         }
     }
 }

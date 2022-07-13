@@ -4,6 +4,7 @@
     {
         public BetConfirmResultMessage(long betId, long selectionId, decimal stake, int userId, bool allowed)
         {
+            BetId = betId;
             SelectionId = selectionId;
             Stake = stake;
             UserId = userId;

@@ -3,14 +3,16 @@ using Bets.API.Service;
 using Bets.Domain.Interfaces;
 using Bets.Infrastructure.Kafka;
 using Bets.Infrastructure.Repositories;
-using Shared.Common.Interfaces;
 using Shared.Common.Messages;
 using Shared.Infrastructure.Kafka;
 
 const string CONSUMER_SECTION = "Kafka:Consumer";
 const string PRODUCER_SECTION = "Kafka:Producer";
+const string BETS_CONNECTION = "BetsConnection";
 
 var builder = WebApplication.CreateBuilder(args);
+
+var betsConnectionString = builder.Configuration.GetValue<string>(BETS_CONNECTION);
 
 var cfgConsumer = new SharedConsumerConfig<BetConfirmResultMessage>();
 builder.Configuration.GetSection(CONSUMER_SECTION).Bind(cfgConsumer);
@@ -27,8 +29,8 @@ builder.Services.AddSingleton(a =>
 });
 
 
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<IBetsRepository, BetsRepository>();
+builder.Services.AddScoped<IUsersRepository>(a => new UsersRepository(betsConnectionString));
+builder.Services.AddScoped<IBetsRepository>(a => new BetsRepository(betsConnectionString));
 
 builder.Services.AddScoped<BetsProcessor>();
 
