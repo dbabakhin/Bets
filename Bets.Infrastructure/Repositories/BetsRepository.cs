@@ -1,6 +1,7 @@
 ﻿using Bets.Domain.Entities;
 using Bets.Domain.Enums;
 using Bets.Domain.Interfaces;
+using Bets.Domain.Models;
 using Dapper;
 using System.Data.SqlClient;
 
@@ -28,25 +29,15 @@ namespace Bets.Infrastructure.Repositories
             _conn = conn ?? throw new ArgumentNullException(nameof(conn));
         }
 
-        public async Task<Bet> CreateBetAsync(long selectionId, decimal stake, int userId, BetStatusEnum status, DateTime createDate, CancellationToken ct)
+        public async Task<Bet> CreateBetAsync(Bet bet, CancellationToken ct)
         {
-            var b = new Bet()
-            {
-                CreatedDate = createDate,
-                UpdatedDate = createDate,
-                SelectionId = selectionId,
-                Stake = stake,
-                UserId = userId,
-                Status = status
-            };
+            if (bet == null) throw new ArgumentNullException(nameof(bet));
 
-            using (var db = new SqlConnection(_conn))
-            {
-                var res = await db.QueryAsync<int>(CREATE_QUERY, b);
-                b.BetId = res.First();
-            }
+            using var db = new SqlConnection(_conn);
+            var res = await db.QueryAsync<int>(CREATE_QUERY, bet);
+            bet.SetId(res.Single());
 
-            return b;
+            return bet;
         }
 
         public async Task<List<Bet>> GetUserBetsAsync(int userId, CancellationToken ct)
@@ -58,11 +49,11 @@ namespace Bets.Infrastructure.Repositories
             }
         }
 
-        public async Task UpdateBetConfirmationAsync(long betId, BetStatusEnum status, DateTime updateDate, CancellationToken ct)
+        public async Task UpdateBetConfirmationAsync(UpdateBetStatusModel model, CancellationToken ct)
         {
             using (var db = new SqlConnection(_conn))
             {
-                await db.ExecuteAsync(UPDATE_QUERY, new { Status = (int)status, BetId = betId, UpdateDate = updateDate });
+                await db.ExecuteAsync(UPDATE_QUERY, new { Status = (int)model.NewStatus, BetId = model.BetId });
             }
         }
     }

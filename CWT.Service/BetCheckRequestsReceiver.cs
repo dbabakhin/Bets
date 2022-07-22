@@ -17,9 +17,10 @@ namespace CWT.Service
             _consumer = consumer ?? throw new ArgumentNullException(nameof(consumer));
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.Run(() => ConsumeAsync(stoppingToken));
+
+        private async Task ConsumeAsync(CancellationToken stoppingToken)
         {
-            await Task.Yield();
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
             while (!stoppingToken.IsCancellationRequested)

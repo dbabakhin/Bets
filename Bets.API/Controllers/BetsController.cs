@@ -1,6 +1,7 @@
 ﻿using Bets.API.App;
 using Bets.API.Models.Bets;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Bets.API.Controllers
 {
@@ -9,16 +10,19 @@ namespace Bets.API.Controllers
     public class BetsController : ControllerBase
     {
         private readonly BetsProcessor _betsProcessor;
+        private readonly ILogger<BetsController> _logger;
 
-        public BetsController(BetsProcessor betsApplicationService)
+        public BetsController(BetsProcessor betsApplicationService, ILogger<BetsController> logger)
         {
             _betsProcessor = betsApplicationService ?? throw new ArgumentNullException(nameof(betsApplicationService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateBet([FromBody] CreateBetRequest request, CancellationToken ct)
         {
-            var b = await _betsProcessor.CreateBetAsync(request.UserToken, request.SelectionId, request.Stake, ct);
+            using var s = _logger.BeginScope("selectionId: {selection}, stake: {stake}, token: {token}", request.SelectionId, request.Stake, request.UserToken);
+            var b = await _betsProcessor.CreateBetAsync(request.UserToken, request.GetModel(), ct);
             return CreatedAtAction(nameof(CreateBet), b.BetId);
         }
 

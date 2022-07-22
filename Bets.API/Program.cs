@@ -1,4 +1,5 @@
 using Bets.API.App;
+using Bets.API.HealthCheck;
 using Bets.API.Service;
 using Bets.Domain.Interfaces;
 using Bets.Infrastructure.Kafka;
@@ -11,6 +12,8 @@ const string PRODUCER_SECTION = "Kafka:Producer";
 const string BETS_CONNECTION = "BetsConnection";
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHealthChecks().AddCheck<BetsCheck>("BetCheck");
 
 var betsConnectionString = builder.Configuration.GetValue<string>(BETS_CONNECTION);
 
@@ -43,6 +46,8 @@ builder.Services.AddHostedService<CWTResultReceiver>();
 
 
 var app = builder.Build();
+
+app.MapHealthChecks("/healthz");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

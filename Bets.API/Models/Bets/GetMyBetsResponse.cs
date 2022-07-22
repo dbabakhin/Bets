@@ -1,4 +1,5 @@
 ﻿using Bets.Domain.Entities;
+using Bets.Domain.Enums;
 
 namespace Bets.API.Models.Bets
 {
@@ -19,12 +20,11 @@ namespace Bets.API.Models.Bets
         {
             SelectionId = bet.SelectionId;
             Stake = bet.Stake;
-            Status = bet.Status.ToString();
+            Status = bet.Status;
         }
 
-
-        public long SelectionId { get; set; }
-        public decimal Stake { get; set; }
-        public string Status { get; set; }
+        public long SelectionId { get; }
+        public decimal Stake { get; }
+        public BetStatusEnum Status { get; }
     }
 }

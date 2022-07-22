@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Bets.Domain.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bets.API.Models.Bets
 {
@@ -9,5 +10,7 @@ namespace Bets.API.Models.Bets
         [Required]
         [Range(0, double.MaxValue)]
         public decimal Stake { get; set; }
+
+        public CreateBetModel GetModel() => new CreateBetModel(SelectionId, Stake);
     }
 }

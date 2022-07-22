@@ -11,10 +11,10 @@
             Allowed = allowed;
         }
 
-        public long BetId { get; set; }
-        public long SelectionId { get; set; }
-        public decimal Stake { get; set; }
-        public int UserId { get; set; }
-        public bool Allowed { get; set; }
+        public long BetId { get; }
+        public long SelectionId { get; }
+        public decimal Stake { get; }
+        public int UserId { get; }
+        public bool Allowed { get; }
     }
 }
