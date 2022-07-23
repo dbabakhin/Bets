@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Microsoft.Extensions.Options;
 using Shared.Common.Interfaces;
 using Shared.Common.Messages;
 using System.Text.Json;
@@ -9,9 +10,9 @@ namespace Shared.Infrastructure.Kafka
     {
         private readonly IConsumer<string, string> _kafkaConsumer;
 
-        public KafkaJsonConsumer(IConsumer<string, string> kafkaConsumer)
+        public KafkaJsonConsumer(IOptions<SharedConsumerConfig> options)
         {
-            _kafkaConsumer = kafkaConsumer ?? throw new ArgumentNullException(nameof(kafkaConsumer));
+            _kafkaConsumer = options.Value.Build();
         }
 
         public void Close() => _kafkaConsumer.Close();

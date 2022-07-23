@@ -1,6 +1,7 @@
 ﻿using Bets.Domain.Entities;
 using Bets.Domain.Interfaces;
 using Dapper;
+using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
 
 namespace Bets.Infrastructure.Repositories
@@ -12,9 +13,9 @@ namespace Bets.Infrastructure.Repositories
         private const string SELECT_QUERY = "SELECT UserId, BetLimit, UserName, Token " +
                                             "FROM [dbo].[Users]" +
                                             "WHERE Token = @token";
-        public UsersRepository(string conn)
+        public UsersRepository(IOptions<BetsConnectionConfig> conn)
         {
-            _conn = conn ?? throw new ArgumentNullException(nameof(conn));
+            _conn = conn.Value.BetsConnectionString ?? throw new ArgumentNullException(nameof(conn));
         }
 
         public async Task<User> GetUserAsync(string token, CancellationToken ct)

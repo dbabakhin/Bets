@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Microsoft.Extensions.Options;
 using Shared.Common.Interfaces;
 using System.Text.Json;
 
@@ -9,10 +10,10 @@ namespace Bets.Infrastructure.Kafka
         private readonly string _topicName;
         private readonly IProducer<string, string> _kafkaProducer;
 
-        public JsonKafkaProducer(string topicName, IProducer<string, string> kafkaProducer)
+        public JsonKafkaProducer(IOptions<SharedProducerConfig> options)
         {
-            _topicName = topicName ?? throw new ArgumentNullException(nameof(topicName));
-            _kafkaProducer = kafkaProducer ?? throw new ArgumentNullException(nameof(kafkaProducer));
+            _topicName = options.Value.TopicName ?? throw new ArgumentNullException(nameof(options));
+            _kafkaProducer = options.Value.Build() ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task ProduceAsync(string key, TValue message, CancellationToken ct)

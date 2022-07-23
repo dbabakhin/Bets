@@ -36,8 +36,10 @@ namespace Bets.API.Service
                 {
                     using (var scope = _serviceProvider.CreateScope())
                     {
+                        var updModel = new UpdateBetStatusModel(consumeResult.Value.BetId, consumeResult.Value.Allowed);
+                        using var s = _logger.BeginScope("betId: {betId}, scope:{scope}", updModel.BetId, Guid.NewGuid());
                         var processor = scope.ServiceProvider.GetRequiredService<BetsProcessor>();
-                        await processor.ProcessBetStatusAsync(new UpdateBetStatusModel(consumeResult.Value.BetId, consumeResult.Value.Allowed), stoppingToken);
+                        await processor.ProcessBetStatusAsync(updModel, stoppingToken);
                     }
                     _consumer.Commit();
                 }

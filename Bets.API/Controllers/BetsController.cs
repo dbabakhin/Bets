@@ -21,7 +21,9 @@ namespace Bets.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBet([FromBody] CreateBetRequest request, CancellationToken ct)
         {
-            using var s = _logger.BeginScope("selectionId: {selection}, stake: {stake}, token: {token}", request.SelectionId, request.Stake, request.UserToken);
+            using var s = _logger.BeginScope(
+                "selectionId: {selection}, stake: {stake}, token: {token}, scope:{scope}",
+                request.SelectionId, request.Stake, request.UserToken, Guid.NewGuid());
             var b = await _betsProcessor.CreateBetAsync(request.UserToken, request.GetModel(), ct);
             return CreatedAtAction(nameof(CreateBet), b.BetId);
         }

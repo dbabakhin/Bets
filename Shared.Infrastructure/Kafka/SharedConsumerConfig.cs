@@ -3,13 +3,13 @@ using Shared.Common.Interfaces;
 
 namespace Shared.Infrastructure.Kafka
 {
-    public class SharedConsumerConfig<TValue>
+    public class SharedConsumerConfig
     {
         public string TopicName { get; set; }
         public string BootstrapServers { get; set; }
         public string GroupId { get; set; }
 
-        public IMessageConsumer<string, TValue> Build()
+        public IConsumer<string, string> Build()
         {
 
             var cfg = new ConsumerConfig()
@@ -24,7 +24,7 @@ namespace Shared.Infrastructure.Kafka
             var c = b.Build();
             c.Subscribe(TopicName);
 
-            return new KafkaJsonConsumer<TValue>(c);
+            return c;
         }
     }
 }

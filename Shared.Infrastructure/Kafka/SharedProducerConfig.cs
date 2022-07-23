@@ -3,12 +3,12 @@ using Shared.Common.Interfaces;
 
 namespace Bets.Infrastructure.Kafka
 {
-    public class SharedProducerConfig<TValue>
+    public class SharedProducerConfig
     {
         public string TopicName { get; set; }
         public string BootstrapServers { get; set; }
 
-        public IMessageProducer<string,TValue> Build()
+        public IProducer<string, string> Build()
         {
             var producerBuilder = new ProducerBuilder<string, string>(new ProducerConfig()
             {
@@ -16,7 +16,7 @@ namespace Bets.Infrastructure.Kafka
             });
             var producer = producerBuilder.Build();
 
-            return new JsonKafkaProducer<TValue>(TopicName, producer);
+            return producer;
         }
     }
 

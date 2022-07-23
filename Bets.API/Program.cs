@@ -1,39 +1,19 @@
 using Bets.API.App;
 using Bets.API.HealthCheck;
 using Bets.API.Service;
-using Bets.Domain.Interfaces;
-using Bets.Infrastructure.Kafka;
-using Bets.Infrastructure.Repositories;
+using Bets.Infrastructure.DI;
 using Shared.Common.Messages;
-using Shared.Infrastructure.Kafka;
+using Shared.Infrastructure.DI;
 
-const string CONSUMER_SECTION = "Kafka:Consumer";
-const string PRODUCER_SECTION = "Kafka:Producer";
-const string BETS_CONNECTION = "BetsConnection";
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHealthChecks().AddCheck<BetsCheck>("BetCheck");
 
-var betsConnectionString = builder.Configuration.GetValue<string>(BETS_CONNECTION);
+builder.Services.AddKafkaConsumer<BetConfirmResultMessage>(builder.Configuration);
+builder.Services.AddKafkaProducer<BetConfirmRequestMessage>(builder.Configuration);
 
-var cfgConsumer = new SharedConsumerConfig<BetConfirmResultMessage>();
-builder.Configuration.GetSection(CONSUMER_SECTION).Bind(cfgConsumer);
-builder.Services.AddSingleton(a =>
-{
-    return cfgConsumer.Build();
-});
-
-var cfgProducer = new SharedProducerConfig<BetConfirmRequestMessage>();
-builder.Configuration.GetSection(PRODUCER_SECTION).Bind(cfgProducer);
-builder.Services.AddSingleton(a =>
-{
-    return cfgProducer.Build();
-});
-
-
-builder.Services.AddScoped<IUsersRepository>(a => new UsersRepository(betsConnectionString));
-builder.Services.AddScoped<IBetsRepository>(a => new BetsRepository(betsConnectionString));
+builder.Services.AddBetsDataAccess(builder.Configuration);
 
 builder.Services.AddScoped<BetsProcessor>();
 
@@ -43,7 +23,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHostedService<CWTResultReceiver>();
-
 
 var app = builder.Build();
 

@@ -3,6 +3,7 @@ using Bets.Domain.Enums;
 using Bets.Domain.Interfaces;
 using Bets.Domain.Models;
 using Dapper;
+using Microsoft.Extensions.Options;
 using System.Data.SqlClient;
 
 namespace Bets.Infrastructure.Repositories
@@ -12,7 +13,7 @@ namespace Bets.Infrastructure.Repositories
         private readonly string _conn;
 
         private const string CREATE_QUERY = "INSERT INTO dbo.Bets (CreatedDate, UpdatedDate, SelectionId, Stake, UserId, Status) " +
-                                            "VALUES (@CreatedDate, @UpdatedDate, @SelectionId, @Stake, @UserId, @Status);" +
+                                            "VALUES (GETDATE(), GETDATE(), @SelectionId, @Stake, @UserId, @Status);" +
                                             "SELECT CAST(SCOPE_IDENTITY() as int)";
 
         private const string SELECT_FOR_USER_QUERY = "SELECT BetId, CreatedDate, UpdatedDate, SelectionId, Stake, UserId, Status " +
@@ -21,12 +22,12 @@ namespace Bets.Infrastructure.Repositories
 
         private const string UPDATE_QUERY = "UPDATE dbo.Bets " +
                                             "SET Status = @Status, " +
-                                            "UpdatedDate = @UpdateDate " +
+                                            "UpdatedDate = GETDATE() " +
                                             "WHERE BetId = @BetId";
 
-        public BetsRepository(string conn)
+        public BetsRepository(IOptions<BetsConnectionConfig> conn)
         {
-            _conn = conn ?? throw new ArgumentNullException(nameof(conn));
+            _conn = conn.Value.BetsConnectionString ?? throw new ArgumentNullException(nameof(conn));
         }
 
         public async Task<Bet> CreateBetAsync(Bet bet, CancellationToken ct)

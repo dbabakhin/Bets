@@ -1,0 +1,28 @@
+﻿using Bets.Infrastructure.Kafka;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Shared.Common.Interfaces;
+using Shared.Infrastructure.Kafka;
+
+namespace Shared.Infrastructure.DI
+{
+    public static class KafkaExtensions
+    {
+        const string CONSUMER_SECTION = "Kafka:Consumer";
+        const string PRODUCER_SECTION = "Kafka:Producer";
+
+        public static IServiceCollection AddKafkaConsumer<TValue>(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<SharedConsumerConfig>(configuration.GetSection(CONSUMER_SECTION));
+            services.AddSingleton<IMessageConsumer<string, TValue>, KafkaJsonConsumer<TValue>>();
+            return services;
+        }
+
+        public static IServiceCollection AddKafkaProducer<TValue>(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<SharedProducerConfig>(configuration.GetSection(PRODUCER_SECTION));
+            services.AddSingleton<IMessageProducer<string, TValue>, JsonKafkaProducer<TValue>>();
+            return services;
+        }
+    }
+}
