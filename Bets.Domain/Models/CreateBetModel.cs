@@ -17,9 +17,6 @@ namespace Bets.Domain.Models
         public long SelectionId { get; }
         public decimal Stake { get; }
 
-        public Bet GetBet(int userId, BetStatusEnum status)
-        {
-            return new Bet(userId, SelectionId, Stake, status);
-        }
+        public Bet GetBet(int userId, BetStatusEnum status) => new Bet(userId, SelectionId, Stake, status);
     }
 }

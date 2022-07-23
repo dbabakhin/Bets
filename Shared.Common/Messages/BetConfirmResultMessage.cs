@@ -11,6 +11,8 @@
             Allowed = allowed;
         }
 
+        public override string MessageKey => $"{UserId}";
+
         public long BetId { get; }
         public long SelectionId { get; }
         public decimal Stake { get; }

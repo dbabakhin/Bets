@@ -19,7 +19,7 @@ namespace CWT.Domain.Services
         {
             var userBalance = await _cwtRepository.GetUserBalanceAsync(request.UserId);
             var msg = new BetConfirmResultMessage(request.BetId, request.SelectionId, request.Stake, request.UserId, request.Stake <= userBalance);
-            await _producer.ProduceAsync(null, msg, ct);
+            await _producer.ProduceAsync(msg.MessageKey, msg, ct);
             return msg;
         }
     }

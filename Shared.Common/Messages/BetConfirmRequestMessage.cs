@@ -6,5 +6,7 @@
         public long SelectionId { get; set; }
         public decimal Stake { get; set; }
         public int UserId { get; set; }
+
+        public override string MessageKey => $"{UserId}";
     }
 }

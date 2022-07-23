@@ -18,13 +18,11 @@ namespace Bets.Infrastructure.Repositories
             _conn = conn.Value.BetsConnectionString ?? throw new ArgumentNullException(nameof(conn));
         }
 
-        public async Task<User> GetUserAsync(string token, CancellationToken ct)
+        public async Task<User?> GetUserAsync(string token, CancellationToken ct)
         {
-            using (var db = new SqlConnection(_conn))
-            {
-                var data = await db.QueryAsync<User>(SELECT_QUERY, new {token = token});
-                return data.Single();
-            }            
+            using var db = new SqlConnection(_conn);
+            var data = await db.QueryAsync<User>(SELECT_QUERY, new { token = token });
+            return data.FirstOrDefault();
         }
     }
 }

@@ -8,8 +8,6 @@ using Shared.Infrastructure.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHealthChecks().AddCheck<BetsCheck>("BetCheck");
-
 builder.Services.AddKafkaConsumer<BetConfirmResultMessage>(builder.Configuration);
 builder.Services.AddKafkaProducer<BetConfirmRequestMessage>(builder.Configuration);
 
@@ -18,11 +16,12 @@ builder.Services.AddBetsDataAccess(builder.Configuration);
 builder.Services.AddScoped<BetsProcessor>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddHostedService<CWTResultReceiver>();
+
+builder.Services.AddHealthChecks().AddCheck<BetsCheck>("BetCheck");
 
 var app = builder.Build();
 
